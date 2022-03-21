@@ -1,0 +1,25 @@
+import Os'File
+
+# symbol represents a unitary participant in some logical series, which may even be
+# valid as an empty string. Implementation is as 'string', given absence of a
+# primitive such as 'byte', 'octet', or 'bitfield' which could serve as an efficient
+# and direct representation. When such a primitive is available, the implementation
+# should change to instead use a collection of bytes in some denomination.
+#
+# examples: 
+# - directly-represented codepoints: "a", "("
+# - multi-codepoint atomic symbols:  "\(", "..."
+type symbol string
+
+type symbolOffset {
+  symbol symbol
+  offset number
+}
+
+
+
+main = \(ctx context) none {
+  File'Write(ctx.Os, File'StdOut(), "Hello, world!\n")
+
+  none
+}
