@@ -1,5 +1,3 @@
-import Core'Map'StringMap
-import Core'Map'NumberMap
 import Core'List
 
 type Result {
