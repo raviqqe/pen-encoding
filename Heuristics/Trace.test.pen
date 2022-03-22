@@ -1,3 +1,51 @@
-Add = \(x number, y number) number {
-  x + y
+import Test'Assert
+import Core'String
+import Core'Number
+import 'Trace
+
+loremIpsum = \() [string] {
+  [
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. In cursus tristique ligula, vel pulvinar lectus condimentum ultrices. Pellentesque eu erat et nunc consequat tempus. Mauris faucibus rutrum condimentum. Integer eget magna placerat, semper quam sed, viverra magna. Donec consequat risus congue dolor fermentum, nec feugiat erat fermentum. Nunc sodales, nisl a euismod pretium, nibh nunc lacinia velit, id faucibus risus leo vitae lorem. Donec vitae risus vel diam commodo ultricies id placerat orci.",
+    "Curabitur a libero nisl. Pellentesque dignissim, eros a rutrum fringilla, leo sem ultricies metus, id condimentum arcu risus ut diam. Sed condimentum nisi vitae nisl dignissim auctor. Suspendisse nisl neque, pretium in lorem ut, pretium pellentesque justo. Cras convallis rutrum ipsum ac venenatis. Cras ornare pulvinar dolor, ac tempus eros egestas eu. Integer aliquet urna a eros faucibus, et rutrum lorem placerat. Donec ultricies elit tortor, sed auctor lacus facilisis non. Nunc finibus lacinia lacinia. Aenean in facilisis tellus. Donec eget cursus nisi, at commodo ligula. Duis mattis, felis id vestibulum consequat, velit dui laoreet eros, ac venenatis justo elit non ligula. In tincidunt tellus et dui condimentum, vel lobortis ex pharetra.",
+    "Mauris at orci rhoncus nisi ullamcorper pharetra placerat sit amet lectus. Sed iaculis, arcu nec elementum semper, nisl odio placerat nisl, at scelerisque risus ante eu mauris. Ut cursus odio et blandit blandit. Fusce aliquam pellentesque dolor, vitae vestibulum sapien feugiat et. Morbi convallis quam justo, eu imperdiet urna laoreet ac. In hac habitasse platea dictumst. Mauris hendrerit at libero sed feugiat."
+  ]
+}
+
+# Strategy: split on delimiter
+# 
+# This strategy permits no nesting, so the returned rules are a set of 1, with all logic 
+# implemented in the primary rule.
+#
+SplitOnDelimiterStrategy = \(delimiter string) [Trace'Rule] {
+  worker = \(input string, lenData number, lenDelim number) \(number, number) [[number]] {
+    box = \(start number, end number) \() [number] {
+      [number start, stop]
+    }
+    next = \(start number, end number) [\() [number]] {
+      if lenData < end | lenDelim > end - start {
+        [\()[number]]
+      } else if start + lenDelim > end | delimiter == String'Slice(input, end - lenDelim, end) {
+          [\()[number] box(start, end - lenDelim), ...next(start, end+1)]
+      } else {
+        [\()[number] ...next(start, end+1)]
+      }
+    }
+    [i() for i in next(1,1)]
+  }
+
+  universalSingleRule = \(input string, _ [Trace'Rule]) Result {
+    Value: [Trace'Trace
+      Trace'Trace{
+        startAt: List'First(i, 0),
+        endAt: List'Last(i, 0),
+        kind: 1
+      } for i in worker(
+        input, 
+        String'Length(input), 
+        String'Length(delimiter)
+      )
+    ],
+    IsValid: true
+  }
+  [universalSingleRule]
 }

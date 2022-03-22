@@ -2,25 +2,23 @@ import Core'Map'StringMap
 import Core'Map'NumberMap
 import Core'List
 
-type Kind number
-
-type Rule \(string, [Rule]) Result
-
 type Result {
-  Value Trace | none
+  Value [Trace] | none
   IsValid boolean
 }
+type Kind = number
+type Rule = \(string, [Rule]) Result
+
 
 type Trace {
   startAt number
   endAt number | none
   kind Kind
-  nodes [Trace] | none
 }
 
 Length = \(trace Trace) number {
-  if trace.endAt as number {
-    trace.endAt - trace.startAt
+  if endAt = trace.endAt as number {
+    endAt - trace.startAt
   } else {
     0
   }
@@ -28,7 +26,7 @@ Length = \(trace Trace) number {
 
 New = \(logic [Rule]) \(string) Result {
   \(data string) Result {
-    if top = {List'First(logic, none)} as Rule {
+    if top = List'First(logic, none) as Rule {
       top(data, logic)
     } else {
       Result{Value: none, IsValid: false}
