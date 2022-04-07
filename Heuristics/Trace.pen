@@ -2,16 +2,17 @@ import Core'List
 
 type Result {
   Value [Trace] | none
-  IsValid boolean
+  Valid boolean
 }
-type Kind = number
-type Rule = \(string, [Rule]) Result
 
+type Rule {
+  apply \(string, [Rule]) Result
+}
 
 type Trace {
   startAt number
   endAt number | none
-  kind Kind
+  kind string
 }
 
 Length = \(trace Trace) number {
@@ -22,12 +23,12 @@ Length = \(trace Trace) number {
   }
 }
 
-New = \(logic [Rule]) \(string) Result {
-  \(data string) Result {
-    if top = List'First(logic, none) as Rule {
-      top(data, logic)
+New = \(rs [Rule]) \(string) Result {
+  \(s string) Result {
+    if [r, ...rs] = rs {
+      r().apply(s, rs)
     } else {
-      Result{Value: none, IsValid: false}
+      Result{Value: none, Valid: false}
     }
   }
 }
